@@ -8,6 +8,7 @@ library(rvest)
 library(stringr)
 library(rgeizhals)
 library(dplyr)
+library(readr)
 
 options(tibble.width = Inf)
 
@@ -22,35 +23,80 @@ dat_gh <- get_geizhals_data(url_gh)
 
 dat_gh
 
-## didn't work; error message:
-## > Error: Duplicate identifiers for rows (3, 4, 5)
-## Hypothesis: duplicate URL in two consecutive list pages?
-
-## fetch html of all listing pages:
-listpagehtml_list <- fetch_all_listpages(url_gh)
-
-## and parse information of these listing pages:
-dat_listpage <- parse_all_listpages(listpagehtml_list)
-head(dat_listpage)
-
-## get all (or some) detailpages:
-detailpagehtml_list <- fetch_all_detailpage_html(dat_listpage$detailpage_url)
-dat_detailpage <- parse_all_detailpages(detailpagehtml_list)
-
-n <- 34
-detailpagehtml_list_part = list(url = detailpagehtml_list$url[1:n],
-                                html = detailpagehtml_list$html[1:n])
-
-dat_detailpage <- parse_all_detailpages(detailpagehtml_list_part)
-dat_detailpage
-
-parse_single_detailpage(detailpagehtml_list$html[[35]]) %>% print(n = 35)
-
 #save.image("cellphone-2018-10-dad.Rdata")
 
+## ========================================================================= ##
+## data exploration
+## ========================================================================= ##
 
+names(dat_gh)
+table(dat_gh[["Akku"]])
+get_feature_summary(dat_gh, "Sensoren")
+get_feature_summary(dat_gh, "Besonderheiten")
+get_feature_summary(dat_gh, "Navigation")
+get_feature_summary(dat_gh, "Schnittstellen")
 
+#help(package = "rgeizhals")
 
+## ========================================================================= ##
+## add features
+## ========================================================================= ##
 
+## Akku wechselbar?
+dat_gh[["akku_wechselbar"]] <- extract_feature_ind(dat_gh, col = "Akku", regex = "wechselbar")
+
+## Akku-Kapazität:
+dat_gh[["akku_kapazitaet"]] <- stringr::str_extract(dat_gh[["Akku"]], "^[0-9]+") %>% as.numeric()
+
+## IPx-zertifiziert:
+dat_gh[["ipx"]] <- extract_feature_ind(dat_gh, col = "Besonderheiten", regex = "IP6[0-9]{1}")
+dat_gh[c("Besonderheiten", "ipx")]
+
+## GLONASS GPS (at least):
+dat_gh[["glonass"]] <- extract_feature_ind(dat_gh, col = "Navigation", regex = "GLONASS")
+
+## ========================================================================= ##
+## filter data
+## ========================================================================= ##
+
+#cat(paste(names(dat_gh), collapse = "\n"), "\n")
+varnames_sel <- c(
+  "prodname", 
+  "rating", 
+  "rating_n", 
+  "offers_n", 
+  "listprice", 
+  "detailpage_url", 
+  "Abmessungen", 
+  "Akku", 
+  "Besonderheiten", 
+  "CPU", 
+  "Display", 
+  "Gelistet seit", 
+  "Gesprächszeit", 
+  "Gewicht", 
+  "Navigation", 
+  "OS", 
+  "price_2nd_min", 
+  "price_3rd_min", 
+  "price_median", 
+  "price_min", 
+  "RAM", 
+  "Schnittstellen", 
+  "Sensoren", 
+  "Speicher", 
+  "Standby-Zeit", 
+  "ipx"
+)
+
+dat_sel <- dat_gh %>% 
+  filter(akku_kapazitaet >= 2500,
+         glonass == 1,
+         listprice <= 300)
+
+dat_sel <- dat_sel %>% arrange(desc(rating)) %>% print(n = 30)
+write_csv(dat_sel, path = "cellpone-2018-10-dad.csv")
+
+dat_sel[[varnames_sel]] %>% View()
 
 
