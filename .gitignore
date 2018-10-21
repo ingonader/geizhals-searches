@@ -1,6 +1,10 @@
 
 # Created by https://www.gitignore.io/api/r,macos
 
+
+## ignore R workspace snapshots:
+*.Rdata
+
 ### macOS ###
 # General
 .DS_Store
@@ -73,3 +77,4 @@ rsconnect/
 
 
 # End of https://www.gitignore.io/api/r,macos
+.Rproj.user
