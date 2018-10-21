@@ -4,6 +4,9 @@
 
 ## ignore R workspace snapshots:
 *.Rdata
+*.csv
+*.xls
+*.xlsx
 
 ### macOS ###
 # General
