@@ -39,6 +39,7 @@ get_feature_summary(dat_gh, col = "Bauart") %>% head(n = 12)
 get_feature_summary(dat_gh, col = "Wartungshinweise") %>% head(n = 10)
 get_feature_summary(dat_gh, col = "Programme") %>% head(n = 10)
 get_feature_summary(dat_gh, col = "Sicherheit") %>% head(n = 10)
+get_feature_summary(dat_gh, col = "Kondensationseffizienzklasse") %>% head(n = 10)
 
 
 ## ========================================================================= ##
@@ -68,7 +69,6 @@ dat_gh <- dat_gh %>% mutate(
                                                     regex = "Wärmetauscher"),
   "lautstaerke" = stringr::str_extract(dat_gh[["Geräuschentwicklung"]], "^[0-9]+") %>% as.numeric()
 )
-head(dat_gh)
 
 #dat_gh[["lautstaerke"]] %>% table()
 
@@ -78,15 +78,50 @@ dat_gh <- dat_gh %>% mutate(
   "wartungshinweis_cnt" = apply(dat_gh[varnames_wartungshinweise], 1, sum)
 )
 
+head(dat_gh)
+
 ## ========================================================================= ##
-## filter data
+## filter and inspect data
 ## ========================================================================= ##
+
+## ------------------------------------------------------------------------- ##
+## only with kondenswasserablauf
+## ------------------------------------------------------------------------- ##
 
 dat_gh %>% filter(
   kondenswasserablauf_ind == 1,
   Energieeffizienzklasse == "A+++",
   wartungshinweis_cnt >= 3
 )
+
+dat_gh %>% filter(prodname == "AEG Electrolux T67680IH3 Wärmepumpentrockner") %>%
+  tidyr::gather() %>% 
+  View()
+
+dat_gh %>% filter(prodname == "AEG Electrolux T7768VIH Wärmepumpentrockner") %>%
+  tidyr::gather() %>% 
+  View()
+  
+dat_gh %>% filter(prodname %in% 
+                    c("AEG Electrolux T67680IH3 Wärmepumpentrockner",
+                      "AEG Electrolux T7768VIH Wärmepumpentrockner")) %>%
+  tidyr::gather() %>% 
+  View()
+
+## ------------------------------------------------------------------------- ##
+## only with kondenswasserablauf
+## ------------------------------------------------------------------------- ##
+
+dat_gh %>% filter(
+  kondenswasserablauf_ind == 1,
+  Energieeffizienzklasse == "A+++"
+)
+
+## ========================================================================= ##
+## save data to disk
+## ========================================================================= ##
+
+readr::write_csv(dat_gh, path = "trockner-2018-10.csv")
 
 ## [[to do]]
 ## * check Wartungsaufwand (!)
