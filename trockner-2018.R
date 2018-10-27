@@ -67,7 +67,8 @@ dat_gh <- dat_gh %>% mutate(
   "wartungshinweis_waermetauscher_ind" = extract_feature_ind(dat_gh,
                                                     col = "Wartungshinweise",
                                                     regex = "Wärmetauscher"),
-  "lautstaerke" = stringr::str_extract(dat_gh[["Geräuschentwicklung"]], "^[0-9]+") %>% as.numeric()
+  "lautstaerke" = stringr::str_extract(dat_gh[["Geräuschentwicklung"]], "^[0-9]+") %>% as.numeric(),
+  "energieverbrauch_num" = stringr::str_extract(dat_gh[["Energieverbrauch"]], "^[0-9]+") %>% as.numeric()
 )
 
 #dat_gh[["lautstaerke"]] %>% table()
@@ -79,6 +80,8 @@ dat_gh <- dat_gh %>% mutate(
 )
 
 head(dat_gh)
+
+table(dat_gh$energieverbrauch_num)
 
 ## ========================================================================= ##
 ## filter and inspect data
@@ -112,10 +115,19 @@ dat_gh %>% filter(prodname %in%
 ## only with kondenswasserablauf
 ## ------------------------------------------------------------------------- ##
 
+table(dat_gh[["energieverbrauch_num"]])
+
 dat_gh %>% filter(
   kondenswasserablauf_ind == 1,
-  Energieeffizienzklasse == "A+++"
-)
+  #Energieeffizienzklasse == "A+++",
+  energieverbrauch_num <= 175
+) %>% print(n = 20)
+
+dat_gh %>% filter(
+  #kondenswasserablauf_ind == 1,
+  #Energieeffizienzklasse == "A+++",
+  energieverbrauch_num <= 175
+) %>% print(n = 20)
 
 ## ========================================================================= ##
 ## save data to disk
