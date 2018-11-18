@@ -111,6 +111,20 @@ dat_gh %>% filter(prodname %in%
   tidyr::gather() %>% 
   View()
 
+
+## Wartung Wärmetauscher: Miele bietet absaugbaren Schwamm;
+## Siemens und Bosch: Wartungsfreie Wärmetauscher
+
+## Konsument:
+## AEG T9DE87685 (ca. 1000 Euro)
+## Miele TWF 500 WP Edition Eco (ca. 1000 Euro)
+## Bosch WTWH7540 (ca. 1300 Euro)
+## Siemens WT7WH590 (ca. 1300 Euro)
+
+dat_gh %>% filter(str_detect(prodname, "Miele|AEG|Siemens|Bosch")) %>% arrange(prodname)%>% View()
+
+dat_gh %>% filter(str_detect(prodname, "Miele")) %>% arrange(price_min)%>% View()
+
 ## ------------------------------------------------------------------------- ##
 ## only with kondenswasserablauf
 ## ------------------------------------------------------------------------- ##
