@@ -31,9 +31,9 @@ url_gh <- "https://geizhals.at/?cat=umtsover&xf=1022_Huawei~1022_LG~1022_Samsung
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 
 ## get data: all list pages, but only details for 10 devices: 
-dat_gh <- get_geizhals_data(url_gh, max_items = 3, max_pages = Inf)
+dat_gh_all <- get_geizhals_data(url_gh, max_items = 3, max_pages = Inf)
 
-dat_gh
+dat_gh_all
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ##
 ## step 2: get specific detailpages
@@ -49,11 +49,11 @@ pattern <- c("p20 lite",
              "xz1 [^(Compact)]",
              "Redmi 5 [^(Plus)]") %>% 
   paste(collapse = "|")
-wch_phone <- grepl(pattern, dat_gh[["prodname"]], ignore.case = TRUE)
-dat_gh[wch_phone, "prodname"] %>% pull()
+wch_phone <- grepl(pattern, dat_gh_all[["prodname"]], ignore.case = TRUE)
+dat_gh_all[wch_phone, "prodname"] %>% pull()
 
 ## get corresponding urls:
-wch_url <- dat_gh[wch_phone, "detailpage_url"] %>% pull()
+wch_url <- dat_gh_all[wch_phone, "detailpage_url"] %>% pull()
 
 ## get html for these urls and parse it::
 detailpagehtml_list <- fetch_all_detailpage_html(wch_url)
@@ -62,12 +62,16 @@ dat_detailpage <- parse_all_detailpages(detailpagehtml_list)
 head(dat_listpage)
 head(dat_detailpage)
 
+
 ## fake listpage:
+dat_listpage <- dat_gh_all[, 1:6]
 ## [[todo]]
 
 ## join listpage data to detailpage data:
-dat_geizhals <- join_details_to_listpage(dat_listpage,
-                                         dat_detailpage)
+dat_gh <- join_details_to_listpage(dat_listpage,
+                                   dat_detailpage)
+dat_gh <- dat_gh %>% filter(detailpage_url %in% wch_url)
+dat_gh
 
 #save.image("cellphone-2018-11.Rdata")
 
@@ -83,6 +87,10 @@ get_feature_summary(dat_gh, "Sensoren")
 get_feature_summary(dat_gh, "Besonderheiten")
 get_feature_summary(dat_gh, "Navigation")
 get_feature_summary(dat_gh, "Schnittstellen")
+
+extract_feature_ind(dat_gh, col = "Schnittstellen", regex = "Bluetooth")
+extract_feature_ind(dat_gh, col = "Display", regex = "Gorilla")
+
 
 #help(package = "rgeizhals")
 
@@ -103,6 +111,9 @@ dat_gh[c("Besonderheiten", "ipx")]
 ## GLONASS GPS (at least):
 dat_gh[["glonass"]] <- extract_feature_ind(dat_gh, col = "Navigation", regex = "GLONASS")
 
+## Gorilla glass:
+dat_gh[["gorilla"]] <- extract_feature_ind(dat_gh, col = "Display", regex = "Gorilla")
+
 ## ========================================================================= ##
 ## filter data
 ## ========================================================================= ##
@@ -120,7 +131,7 @@ varnames_sel <- c(
   "Besonderheiten", 
   "CPU", 
   "Display", 
-  "Gelistet seit", 
+  #"Gelistet seit", 
   "Gesprächszeit", 
   "Gewicht", 
   "Navigation", 
@@ -134,7 +145,8 @@ varnames_sel <- c(
   "Sensoren", 
   "Speicher", 
   "Standby-Zeit", 
-  "ipx"
+  "ipx",
+  "gorilla"
 )
 
 dat_sel <- dat_gh %>% 
@@ -142,9 +154,19 @@ dat_sel <- dat_gh %>%
          glonass == 1,
          listprice <= 300)
 
-dat_sel <- dat_sel %>% arrange(desc(rating)) %>% print(n = 30)
-write_csv(dat_sel, path = "cellpone-2018-10-dad.csv")
+## ========================================================================= ##
+## write out data
+## ========================================================================= ##
 
-dat_sel[[varnames_sel]] %>% View()
+dat_sel <- dat_gh %>% 
+  arrange(desc(price_min))
+#dat_sel %>% print(n = 30)
+write_csv(dat_sel, path = "cellpone-2018-11_full.csv")
+
+dat_sel <- dat_gh[varnames_sel] %>% 
+  arrange(desc(price_min))
+write_csv(dat_sel, path = "cellpone-2018-11_red.csv")
+
+dat_sel[varnames_sel] %>% View()
 
 
