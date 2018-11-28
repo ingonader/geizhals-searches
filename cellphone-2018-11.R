@@ -16,7 +16,7 @@ options(tibble.width = Inf)
 ## get data from geizhals
 ## ========================================================================= ##
 
-##load("cellphone-2018-11.Rdata")
+##load("cellphone-2018-11-b.Rdata")
 
 ## Geizhals:
 ## Cell phones without contract:
@@ -41,13 +41,17 @@ dat_gh_all
 
 ## identify cell phones for comparison:
 pattern <- c("p20 lite",
+             "mate 20 lite",
              "q7 plus", 
+             "g7 thinq",
              "galaxy s7 g930f",
-             "galaxy a[67][^+]*duos", 
-             "galaxy j6[^+]*duos", 
-             "xcover 4",
-             "xz1 [^(Compact)]",
-             "Redmi 5 [^(Plus)]") %>% 
+             "galaxy a[79][^+]*duos", 
+             #"galaxy a[67][^+]*duos", 
+             #"galaxy j6[^+]*duos", 
+             #"xcover 4",
+             "xz1 [^(Compact)]"
+             #"Redmi 5 [^(Plus)]"
+             ) %>% 
   paste(collapse = "|")
 wch_phone <- grepl(pattern, dat_gh_all[["prodname"]], ignore.case = TRUE)
 dat_gh_all[wch_phone, "prodname"] %>% pull()
@@ -73,7 +77,7 @@ dat_gh <- join_details_to_listpage(dat_listpage,
 dat_gh <- dat_gh %>% filter(detailpage_url %in% wch_url)
 dat_gh
 
-#save.image("cellphone-2018-11.Rdata")
+#save.image("cellphone-2018-11-b.Rdata")
 
 
 
@@ -161,11 +165,11 @@ dat_sel <- dat_gh %>%
 dat_sel <- dat_gh %>% 
   arrange(desc(price_min))
 #dat_sel %>% print(n = 30)
-write_csv(dat_sel, path = "cellpone-2018-11_full.csv")
+write_csv(dat_sel, path = "cellphone-2018-11-b_full.csv")
 
 dat_sel <- dat_gh[varnames_sel] %>% 
   arrange(desc(price_min))
-write_csv(dat_sel, path = "cellpone-2018-11_red.csv")
+write_csv(dat_sel, path = "cellphone-2018-11-b_red.csv")
 
 dat_sel[varnames_sel] %>% View()
 
