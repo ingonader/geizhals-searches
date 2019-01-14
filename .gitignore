@@ -4,9 +4,14 @@
 
 ## ignore R workspace snapshots:
 *.Rdata
+
+## ignore data and excel sheets:
 *.csv
 *.xls
 *.xlsx
+
+## ignore images:
+trockner-2018*.jpg
 
 ### macOS ###
 # General
