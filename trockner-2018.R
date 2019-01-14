@@ -26,6 +26,7 @@ dat_gh <- get_geizhals_data(url_gh)
 dat_gh
 
 #save.image("trockner-2018-10.Rdata")
+#save.image("trockner-2019-01.Rdata")
 
 ## ========================================================================= ##
 ## data exploration
@@ -147,7 +148,10 @@ dat_gh %>% filter(
 ## save data to disk
 ## ========================================================================= ##
 
-readr::write_csv(dat_gh, path = "trockner-2018-10.csv")
+dat_gh <- dat_gh %>% arrange(prodname)
+
+#readr::write_csv(dat_gh, path = "trockner-2018-10.csv")
+readr::write_csv(dat_gh, path = "trockner-2019-01.csv")
 
 ## [[to do]]
 ## * check Wartungsaufwand (!)
