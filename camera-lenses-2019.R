@@ -24,6 +24,18 @@ url_gh <- list(
   mft = "https://geizhals.at/?cat=acamobjo&xf=8219_Micro-Four-Thirds"
 )
 
-dat_gh <- purrr::map(url_gh, 
-                 get_geizhals_data)
+## currently can't use apply function: too many requests
+# dat_gh_list <- purrr::map(url_gh, 
+#                  get_geizhals_data)
 
+dat_gh_list <- list()
+dat_gh_list$canon_efs <-  get_geizhals_data(url_gh[["canon_efs"]])
+dat_gh_list$canon_ef <-   get_geizhals_data(url_gh[["canon_ef"]])
+dat_gh_list$canon_rf <-   get_geizhals_data(url_gh[["canon_rf"]])
+#dat_gh_list$sony_e  <-    get_geizhals_data(url_gh[["sony_e"]])
+#dat_gh_list$mft <-        get_geizhals_data(url_gh[["mft"]])
+
+names(dat_gh_list)
+
+## need to add missing data from new geizhals query:
+dat_gh_list[["canon_ef"]]["Lichtstärke"] %>% pull()
