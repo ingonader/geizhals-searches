@@ -24,6 +24,38 @@ url_gh <- list(
   mft = "https://geizhals.at/?cat=acamobjo&xf=8219_Micro-Four-Thirds"
 )
 
+## first, get all detailpage urls:
+listpagehtml_list <- purrr::map(url_gh, fetch_all_listpages)
+#listpagehtml_list <- fetch_all_listpages("https://geizhals.at/?cat=acamobjo&xf=8219_Canon+RF")
+dat_listpage <- purrr::map(listpagehtml_list, parse_all_listpages)
+
+## check:
+dat_listpage[["canon_efs"]]
+dat_listpage[["canon_ef"]]
+dat_listpage[["canon_rf"]]
+dat_listpage[["sony_e"]]
+
+## combine into single data.frame:
+dat_listpage_tmp <- bind_rows(dat_listpage)
+dat_listpage_tmp <- bind_cols(
+  "csys" = rep(names(dat_listpage), purrr::map(dat_listpage, ~ nrow(.x))),
+  dat_listpage_tmp)
+dat_listpage_tmp %>% tail()
+
+## then, fetch all detailpages in chunks:
+n <- 10
+# pos_start <- pos_start + n
+# pos_start <- 1
+pos_end <- pos_start + (n - 1)
+detailpagehtml_list[pos_start : pos_end] <- 
+  fetch_all_detailpage_html(
+    dat_listpage_tmp[["detailpage_url"]][pos_start : pos_end]
+)
+
+## [[todo]]: check above.
+
+## ///// OLD: ////////////////////
+
 ## currently can't use apply function: too many requests
 # dat_gh_list <- purrr::map(url_gh, 
 #                  get_geizhals_data)
