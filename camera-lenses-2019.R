@@ -42,17 +42,27 @@ dat_listpage_tmp <- bind_cols(
   dat_listpage_tmp)
 dat_listpage_tmp %>% tail()
 
-## then, fetch all detailpages in chunks:
-n <- 10
-# pos_start <- pos_start + n
-# pos_start <- 1
+## then, fetch all detailpages in chunks (html only):
+n <- 200
+# pos_start <- - n + 1; detailpagehtml_list_html <- list() ## start from pos_start = 1
+
+pos_start <- pos_start + n
 pos_end <- pos_start + (n - 1)
-detailpagehtml_list[pos_start : pos_end] <- 
+message(pos_start, " to ", pos_end)
+detailpagehtml_list_html[pos_start : pos_end] <- 
   fetch_all_detailpage_html(
-    dat_listpage_tmp[["detailpage_url"]][pos_start : pos_end]
+    dat_listpage_tmp[["detailpage_url"]][pos_start : pos_end])[["html"]]
+
+## when done, add corresponding url's:
+detailpagehtml_list <- list(
+  url = dat_listpage_tmp[["detailpage_url"]][1 : pos_end],
+  html = detailpagehtml_list_html[1 : pos_end]
 )
 
-## [[todo]]: check above.
+detailpagehtml_list
+
+
+
 
 ## ///// OLD: ////////////////////
 
