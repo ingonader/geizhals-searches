@@ -47,9 +47,11 @@ n_max
 ## * build some kind of mechanism to get chunks of data
 ##   into rgeizhals package
 
+# load("camera-lenses-2019_v001.Rdata")
+
 ## then, fetch all detailpages in chunks (html only):
 n <- 150
-# pos_start <- - n + 1; detailpagehtml_list_html <- list() ## start from pos_start = 1
+pos_start <- - n + 1; detailpagehtml_list_html <- list() ## start from pos_start = 1
 
 pos_start <- pmin(pos_start + n, n_max)
 pos_end <- pmin(pos_start + (n - 1), n_max)
@@ -57,6 +59,9 @@ message(pos_start, " to ", pos_end)
 detailpagehtml_list_html[pos_start : pos_end] <- 
   fetch_all_detailpage_html(
     dat_listpage_tmp[["detailpage_url"]][pos_start : pos_end])[["html"]]
+
+# save.image("camera-lenses-2019_v001.Rdata")
+
 
 ## when done, add corresponding url's:
 detailpagehtml_list <- list(
