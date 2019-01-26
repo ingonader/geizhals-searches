@@ -42,12 +42,19 @@ dat_listpage_tmp <- bind_cols(
   dat_listpage_tmp)
 dat_listpage_tmp %>% tail()
 
+n_max <- length(dat_listpage_tmp[["detailpage_url"]])
+
+
+## [[todo]]:
+## * build some kind of mechanism to get chunks of data
+##   into rgeizhals package
+
 ## then, fetch all detailpages in chunks (html only):
-n <- 200
+n <- 150
 # pos_start <- - n + 1; detailpagehtml_list_html <- list() ## start from pos_start = 1
 
-pos_start <- pos_start + n
-pos_end <- pos_start + (n - 1)
+pos_start <- pmin(pos_start + n, n_max)
+pos_end <- pmin(pos_start + (n - 1), n_max)
 message(pos_start, " to ", pos_end)
 detailpagehtml_list_html[pos_start : pos_end] <- 
   fetch_all_detailpage_html(
@@ -60,6 +67,7 @@ detailpagehtml_list <- list(
 )
 
 detailpagehtml_list
+
 
 
 
