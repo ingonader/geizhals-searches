@@ -24,10 +24,8 @@ url_gh <- list(
   mft = "https://geizhals.at/?cat=acamobjo&xf=8219_Micro-Four-Thirds"
 )
 
-## first, get all detailpage urls:
-listpagehtml_list <- purrr::map(url_gh, fetch_all_listpages)
-#listpagehtml_list <- fetch_all_listpages("https://geizhals.at/?cat=acamobjo&xf=8219_Canon+RF")
-dat_listpage <- purrr::map(listpagehtml_list, parse_all_listpages)
+## first, get listpage data with all detailpage urls:
+dat_listpage <- purrr::map(url_gh, get_listpage_data)
 
 ## check:
 dat_listpage[["canon_efs"]]
@@ -43,7 +41,7 @@ dat_listpage_tmp <- bind_cols(
 dat_listpage_tmp %>% tail()
 
 n_max <- length(dat_listpage_tmp[["detailpage_url"]])
-
+n_max
 
 ## [[todo]]:
 ## * build some kind of mechanism to get chunks of data
