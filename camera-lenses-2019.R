@@ -21,6 +21,7 @@ url_gh <- list(
   canon_ef = "https://geizhals.at/?cat=acamobjo&xf=8219_Canon+EF",
   canon_rf = "https://geizhals.at/?cat=acamobjo&xf=8219_Canon+RF",
   sony_e = "https://geizhals.at/?cat=acamobjo&xf=8219_Sony+E",
+  fujifilm = "https://geizhals.at/?cat=acamobjo&xf=8219_Fujifilm+X",
   mft = "https://geizhals.at/?cat=acamobjo&xf=8219_Micro-Four-Thirds"
 )
 
